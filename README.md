@@ -6,23 +6,32 @@
 
 Next.js 16 · TypeScript · Tailwind CSS v4 · Motion · free hosting on Vercel · no database
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fratul-hossen%2Fportfolio&project-name=portfolio&repository-name=portfolio)
-&nbsp;
+### 🌐 Live example: **[ratul.world](https://ratul.world)**
+
+[![Live demo](https://img.shields.io/badge/live-ratul.world-0071e3)](https://ratul.world)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
+&nbsp;
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fratul-hossen%2Fportfolio&project-name=portfolio&repository-name=portfolio)
 
-<img src="docs/screenshots/home.png" alt="Home page, light theme" width="100%">
+<a href="https://ratul.world"><img src="docs/screenshots/home.png" alt="ratul.world home page, light theme" width="100%"></a>
+
+<sub>Screenshots are from <a href="https://ratul.world">ratul.world</a>, the site this template was built for. The repo itself ships with demo content that you replace with your own.</sub>
 
 </div>
 
 <table>
   <tr>
     <td width="50%"><img src="docs/screenshots/home-dark.png" alt="Home page, dark theme"></td>
-    <td width="50%"><img src="docs/screenshots/journey.png" alt="Journey section with education and a grade chart"></td>
+    <td width="50%"><img src="docs/screenshots/journey.png" alt="Journey section with education and a GPA chart"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/project.png" alt="Project case-study page"></td>
+    <td><img src="docs/screenshots/academic.png" alt="Academic profile page"></td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/admin.png" alt="Admin panel, editing projects"></td>
-    <td><img src="docs/screenshots/project.png" alt="Project case-study page"></td>
+    <td><img src="docs/screenshots/login.png" alt="Admin sign-in with Google"></td>
   </tr>
 </table>
 
@@ -43,6 +52,7 @@ Next.js 16 · TypeScript · Tailwind CSS v4 · Motion · free hosting on Vercel 
 11. [Troubleshooting](#troubleshooting)
 12. [Getting updates from this template](#getting-updates-from-this-template)
 13. [বাংলায় সংক্ষেপে](#বাংলায়-সংক্ষেপে)
+14. [Contributors](#contributors)
 
 ---
 
@@ -92,10 +102,16 @@ Next.js 16 · TypeScript · Tailwind CSS v4 · Motion · free hosting on Vercel 
 
 You need **[Node.js 22](https://nodejs.org)** (or newer) and **[Git](https://git-scm.com)**.
 
-**a) Get your own copy of the repo.** Click **Use this template → Create a new repository** at the top of this page (or **Fork** it). Name it something like `portfolio`, then clone *your* copy:
+**a) Get your own copy of the repo.** At the top of this page, click **Use this template → Create a new repository** (or **Fork**). Name it `portfolio`. GitHub now has a copy that belongs to **you**, at `https://github.com/YOUR-GITHUB-USERNAME/portfolio`.
+
+> [!IMPORTANT]
+> Wherever this guide says **`YOUR-GITHUB-USERNAME`**, type **your own** GitHub username.
+> For example, if your profile is `github.com/jane-doe`, the command below becomes
+> `git clone https://github.com/jane-doe/portfolio.git`.
+> Clone **your copy**, not this repo. The admin panel's Publish button pushes to the repo you cloned.
 
 ```bash
-git clone https://github.com/<your-username>/portfolio.git
+git clone https://github.com/YOUR-GITHUB-USERNAME/portfolio.git
 ```
 
 ```bash
@@ -121,7 +137,7 @@ Open **http://localhost:3000/admin** and go through the sidebar from top to bott
 
 | Admin page | What to fill in |
 | --- | --- |
-| **Profile** | Name, headline, tagline, photo, CV (PDF), email, About paragraphs, languages, social links |
+| **Profile** | Name, headline, tagline, photo, CV (PDF), email, About paragraphs, languages, social links (the demo links say `your-username`, so put in your real GitHub, LinkedIn and Instagram) |
 | **Skills** | Groups of skills. The first box is the big one. |
 | **Education** | Degrees and schools. Add term GPAs (with credits) and the CGPA and chart are calculated for you. |
 | **Experience** | Jobs, internships and leadership roles |
@@ -150,7 +166,8 @@ Every **Save** updates the page at `localhost:3000` right away. When you're happ
 1. Push your repo to GitHub (the **Publish** button does it, or `git push`).
 2. Go to **[vercel.com/new](https://vercel.com/new)** and sign in with GitHub.
 3. **Import** your `portfolio` repository. Vercel detects Next.js, so leave every setting as it is.
-4. Click **Deploy**. About a minute later your site is live at `https://<project-name>.vercel.app`.
+4. Click **Deploy**. About a minute later your site is live at `https://YOUR-PROJECT.vercel.app`.
+   (`YOUR-PROJECT` is the name Vercel shows on the success screen, e.g. `jane-portfolio.vercel.app`. The steps below use it.)
 
 From now on, **every push to `main` redeploys the site automatically.**
 
@@ -175,7 +192,7 @@ This takes about 5 minutes and is free.
    - **Authorized redirect URIs**, add **both** of these:
      ```
      http://localhost:3000/api/auth/callback/google
-     https://<your-project>.vercel.app/api/auth/callback/google
+     https://YOUR-PROJECT.vercel.app/api/auth/callback/google
      ```
      (Add your custom domain too later, e.g. `https://yourname.com/api/auth/callback/google`.)
 5. Click **Create** and copy the **Client ID** and **Client secret**.
@@ -203,7 +220,7 @@ In Vercel, open your project → **Settings → Environment Variables** and add:
 
 Then **Deployments → ⋯ on the latest → Redeploy** so the new variables take effect.
 
-Visit `https://<your-project>.vercel.app/admin`, click **Continue with Google**, and you're in. 🎉
+Visit `https://YOUR-PROJECT.vercel.app/admin`, click **Continue with Google**, and you're in. 🎉
 
 **To require the login on your computer too**, copy the example file and fill in the same four values:
 
@@ -372,8 +389,25 @@ Your content lives in `src/content/site.json` and `public/uploads/`. If git repo
 
 ---
 
+## Contributors
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://ratul.world">
+        <img src="https://github.com/ratul-hossen.png" width="100" alt="MD Ratul Hossen"><br>
+        <b>MD Ratul Hossen</b>
+      </a><br>
+      <sub>Creator & maintainer</sub><br>
+      <a href="https://ratul.world">🌐 ratul.world</a> · <a href="https://github.com/ratul-hossen">GitHub</a>
+    </td>
+  </tr>
+</table>
+
+Pull requests are welcome. Found a bug or have an idea? [Open an issue](https://github.com/ratul-hossen/portfolio/issues).
+
 ## License
 
-[MIT](LICENSE). Use it for your own portfolio, change anything you like. A ⭐ on the repo is appreciated if it helped you.
+[MIT](LICENSE). Use it for your own portfolio and change anything you like. A ⭐ on the repo is appreciated if it helped you.
 
-Made by **[MD Ratul Hossen](https://github.com/ratul-hossen)**.
+Made with ❤️ by **[MD Ratul Hossen](https://ratul.world)**. See it live at **[ratul.world](https://ratul.world)**.
