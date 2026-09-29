@@ -1,0 +1,614 @@
+{
+  "profile": {
+    "name": "Alex Morgan",
+    "shortName": "alex",
+    "headline": "Software Engineer — AI & Web",
+    "tagline": "I build useful software with modern AI, and ship it as products people actually enjoy using.",
+    "currentStatus": "Open to internships and graduate programmes for 2027",
+    "location": "Your City, Your Country",
+    "portrait": [],
+    "email": "you@example.com",
+    "about": [
+      "I'm a Computer Science student at Northbridge University. This whole site is demo content — open the admin panel at /admin and replace every word with your own story.",
+      "My work sits between machine learning and real products: I like taking an idea from a notebook to something a real person can open on their phone.",
+      "Outside of code I read, hike, and help run the university's developer club. Tell visitors what makes you, you — two to four short paragraphs work best."
+    ],
+    "languages": [
+      {
+        "name": "English",
+        "level": "Fluent"
+      },
+      {
+        "name": "Spanish",
+        "level": "B2 (CEFR)"
+      },
+      {
+        "name": "German",
+        "level": "A2 (CEFR)"
+      }
+    ],
+    "route": [
+      {
+        "place": "Home town",
+        "detail": "Northbridge University",
+        "state": "past"
+      },
+      {
+        "place": "Abroad",
+        "detail": "Lakeside Institute of Technology — exchange",
+        "state": "now"
+      },
+      {
+        "place": "Next",
+        "detail": "Master's in Artificial Intelligence",
+        "state": "next"
+      }
+    ],
+    "socials": [
+      {
+        "platform": "github",
+        "label": "GitHub",
+        "url": "https://github.com/your-username"
+      },
+      {
+        "platform": "linkedin",
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/your-username/"
+      },
+      {
+        "platform": "instagram",
+        "label": "Instagram",
+        "url": "https://www.instagram.com/your-username/"
+      }
+    ]
+  },
+  "journey": [
+    {
+      "id": "hackathon-2025",
+      "pinned": true,
+      "kind": "award",
+      "title": "National AI Hackathon 2025",
+      "organization": "Example Tech Foundation",
+      "location": "Your City",
+      "start": "Nov 2025",
+      "end": "Nov 2025",
+      "status": "completed",
+      "result": "2nd place",
+      "summary": "Built a study assistant in 36 hours with a team of four and placed second out of 120 teams.",
+      "credentialUrl": "https://example.com/certificate",
+      "media": [
+        {
+          "type": "image",
+          "url": "/demo/hackathon.webp",
+          "alt": "Team photo at the hackathon",
+          "style": "photo"
+        }
+      ]
+    },
+    {
+      "id": "conference-talk-2026",
+      "pinned": true,
+      "kind": "event",
+      "title": "Student Research Conference 2026",
+      "organization": "Northbridge University",
+      "location": "Your City",
+      "start": "Mar 2026",
+      "end": "Mar 2026",
+      "status": "completed",
+      "result": "Presenter",
+      "summary": "Presented our paper on retrieval-augmented tutoring to an audience of 200 students and faculty.",
+      "media": [
+        {
+          "type": "image",
+          "url": "/demo/conference.webp",
+          "alt": "Presenting at the conference",
+          "style": "photo"
+        }
+      ]
+    },
+    {
+      "id": "deans-list",
+      "kind": "award",
+      "title": "Dean's List",
+      "organization": "Northbridge University",
+      "start": "2025",
+      "end": "2026",
+      "status": "completed",
+      "result": "Three semesters",
+      "summary": "Top 5% of the faculty by semester GPA."
+    },
+    {
+      "id": "ml-intern",
+      "kind": "experience",
+      "title": "Machine Learning Intern",
+      "organization": "Acme Analytics",
+      "location": "Remote",
+      "start": "Jun 2025",
+      "end": "Sep 2025",
+      "status": "completed",
+      "summary": "Worked on the search team, improving how customers find answers in product documentation.",
+      "highlights": [
+        "Built an evaluation set of 500 real questions and used it to compare three retrieval setups.",
+        "Shipped a re-ranking step that raised answer accuracy from 71% to 84%.",
+        "Wrote the internal guide the team now uses to add new documents."
+      ],
+      "quote": "The most useful thing I learned: measure first, then change one thing at a time."
+    },
+    {
+      "id": "dev-club",
+      "kind": "leadership",
+      "title": "President, Developer Club",
+      "organization": "Northbridge University",
+      "location": "Your City",
+      "start": "Jan 2025",
+      "status": "in-progress",
+      "summary": "Lead a club of 300+ members that runs weekly workshops, a mentorship programme and an annual hackathon.",
+      "highlights": [
+        "Grew active membership from 80 to 300+ in one year.",
+        "Started a peer-mentoring scheme that pairs first-years with seniors."
+      ],
+      "links": [
+        {
+          "label": "Club website",
+          "url": "https://example.com"
+        }
+      ]
+    },
+    {
+      "id": "northbridge-bsc",
+      "kind": "education",
+      "title": "BSc in Computer Science",
+      "organization": "Northbridge University",
+      "location": "Your City",
+      "start": "Jan 2024",
+      "end": "Dec 2027",
+      "status": "in-progress",
+      "summary": "Focus on machine learning, data systems and human–computer interaction.",
+      "highlights": [
+        "Teaching assistant for Introduction to Programming",
+        "Final-year project on AI tutoring"
+      ],
+      "grades": [
+        {
+          "term": "Spring 2024",
+          "gpa": 3.62,
+          "credits": 15
+        },
+        {
+          "term": "Fall 2024",
+          "gpa": 3.75,
+          "credits": 16
+        },
+        {
+          "term": "Spring 2025",
+          "gpa": 3.81,
+          "credits": 17
+        },
+        {
+          "term": "Fall 2025",
+          "gpa": 3.9,
+          "credits": 15
+        },
+        {
+          "term": "Spring 2026",
+          "gpa": 3.94,
+          "credits": 16
+        }
+      ],
+      "courses": [
+        {
+          "code": "CS201",
+          "name": "Data Structures & Algorithms"
+        },
+        {
+          "code": "CS310",
+          "name": "Machine Learning"
+        },
+        {
+          "code": "CS330",
+          "name": "Database Systems"
+        },
+        {
+          "code": "CS345",
+          "name": "Natural Language Processing"
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "/demo/campus.webp",
+          "alt": "Northbridge University campus",
+          "style": "photo"
+        }
+      ]
+    },
+    {
+      "id": "lakeside-exchange",
+      "kind": "education",
+      "title": "Exchange Semester — Computer Science",
+      "organization": "Lakeside Institute of Technology",
+      "location": "Abroad",
+      "start": "Aug 2026",
+      "end": "Dec 2026",
+      "status": "in-progress",
+      "summary": "One semester abroad taking graduate-level courses in AI.",
+      "courses": [
+        {
+          "code": "AI501",
+          "name": "Deep Learning"
+        },
+        {
+          "code": "AI520",
+          "name": "Information Retrieval"
+        }
+      ]
+    },
+    {
+      "id": "high-school",
+      "kind": "education",
+      "title": "High School Diploma — Science",
+      "organization": "Riverside High School",
+      "location": "Your City",
+      "start": "2021",
+      "end": "2023",
+      "status": "completed",
+      "grade": "A+ average",
+      "summary": "Science track with mathematics and physics.",
+      "group": "school"
+    },
+    {
+      "id": "secondary-school",
+      "kind": "education",
+      "title": "Secondary School Certificate",
+      "organization": "Riverside Secondary School",
+      "location": "Your City",
+      "start": "2019",
+      "end": "2021",
+      "status": "completed",
+      "grade": "5.00 / 5.00",
+      "group": "school"
+    }
+  ],
+  "projects": [
+    {
+      "slug": "study-buddy",
+      "title": "Study Buddy",
+      "subtitle": "An AI tutor that answers from your own lecture notes",
+      "category": "AI · RAG",
+      "status": "live",
+      "featured": true,
+      "team": [
+        "Sam Lee",
+        "Priya Shah"
+      ],
+      "presentedAt": "National AI Hackathon 2025 — 2nd place",
+      "year": "2025",
+      "summary": "Upload your slides and notes, then ask questions — every answer cites the page it came from.",
+      "problem": "Students waste hours searching through slides and PDFs. General chatbots answer confidently but can't point to the course material, so students can't trust them.",
+      "approach": [
+        "Split lecture PDFs into sections and indexed them with vector embeddings.",
+        "Retrieved the most relevant passages for each question and asked the model to answer only from them, with citations.",
+        "Built a simple web app so classmates could try it during exam week."
+      ],
+      "impact": [
+        "Used by 400+ students during finals",
+        "Answers with citations were rated trustworthy by 9 in 10 testers"
+      ],
+      "tech": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL + pgvector",
+        "Next.js",
+        "OpenAI API"
+      ],
+      "links": [
+        {
+          "label": "Live demo",
+          "url": "https://example.com"
+        },
+        {
+          "label": "Source code",
+          "url": "https://github.com/your-username/study-buddy"
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "/demo/project-study-buddy.webp",
+          "alt": "Study Buddy cover",
+          "style": "photo"
+        }
+      ]
+    },
+    {
+      "slug": "city-pulse",
+      "title": "City Pulse",
+      "subtitle": "Open data about your city, made readable",
+      "category": "Data · Web",
+      "status": "completed",
+      "featured": true,
+      "year": "2025",
+      "summary": "A dashboard that turns public transport and air-quality data into simple daily charts.",
+      "problem": "The city publishes useful open data, but only as large CSV files that almost nobody opens.",
+      "approach": [
+        "Wrote a nightly job that downloads and cleans the data.",
+        "Designed a small set of charts that answer everyday questions."
+      ],
+      "impact": [
+        "Featured in the local newspaper's tech column"
+      ],
+      "tech": [
+        "TypeScript",
+        "Next.js",
+        "D3.js",
+        "GitHub Actions"
+      ],
+      "links": [
+        {
+          "label": "Source code",
+          "url": "https://github.com/your-username/city-pulse"
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "/demo/project-city-pulse.webp",
+          "alt": "City Pulse cover",
+          "style": "photo"
+        }
+      ]
+    },
+    {
+      "slug": "pocket-coach",
+      "title": "Pocket Coach",
+      "subtitle": "A habit-tracking app with gentle reminders",
+      "category": "Mobile",
+      "status": "in-development",
+      "featured": true,
+      "year": "2026",
+      "summary": "A small Android app that helps you build one habit at a time.",
+      "problem": "Most habit apps ask you to track ten things at once, and people give up in a week.",
+      "approach": [
+        "Designed the app around a single habit and a daily check-in.",
+        "Used on-device notifications with smart timing."
+      ],
+      "impact": [
+        "Beta tested with 30 friends over four weeks"
+      ],
+      "tech": [
+        "Kotlin",
+        "Jetpack Compose",
+        "Room"
+      ],
+      "note": "Beta — not on the Play Store yet.",
+      "links": [],
+      "media": [
+        {
+          "type": "image",
+          "url": "/demo/project-pocket-coach.webp",
+          "alt": "Pocket Coach cover",
+          "style": "photo"
+        }
+      ]
+    },
+    {
+      "slug": "signal-lens",
+      "title": "Signal Lens",
+      "subtitle": "Reading traffic signs from dash-cam video",
+      "category": "Computer Vision",
+      "status": "coursework",
+      "featured": false,
+      "year": "2025",
+      "summary": "A course project that detects and classifies traffic signs in real time.",
+      "problem": "Detect small signs reliably in low light and motion blur.",
+      "approach": [
+        "Fine-tuned a YOLO model on a public dataset.",
+        "Added blur and brightness augmentation."
+      ],
+      "impact": [
+        "92% mAP on the held-out test set"
+      ],
+      "tech": [
+        "Python",
+        "PyTorch",
+        "OpenCV"
+      ],
+      "links": [
+        {
+          "label": "Report (PDF)",
+          "url": "https://example.com/report.pdf"
+        }
+      ],
+      "media": [
+        {
+          "type": "image",
+          "url": "/demo/project-signal-lens.webp",
+          "alt": "Signal Lens cover",
+          "style": "photo"
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "ai",
+      "title": "AI & Machine Learning",
+      "description": "From training models to shipping them.",
+      "skills": [
+        "PyTorch",
+        "scikit-learn",
+        "LLMs & RAG",
+        "Prompt engineering",
+        "Evaluation"
+      ]
+    },
+    {
+      "id": "languages",
+      "title": "Languages",
+      "description": "What I write every day.",
+      "skills": [
+        "Python",
+        "TypeScript",
+        "Kotlin",
+        "SQL"
+      ]
+    },
+    {
+      "id": "data",
+      "title": "Data",
+      "description": "Storing and moving data.",
+      "skills": [
+        "PostgreSQL",
+        "pgvector",
+        "Pandas",
+        "DuckDB"
+      ]
+    },
+    {
+      "id": "deploy",
+      "title": "Shipping",
+      "description": "Getting it into people's hands.",
+      "skills": [
+        "Next.js",
+        "FastAPI",
+        "Docker",
+        "Vercel",
+        "GitHub Actions"
+      ]
+    }
+  ],
+  "research": {
+    "statement": [
+      "I'm interested in making AI systems that can show their work — models that cite their sources and admit when they don't know.",
+      "My current work looks at how retrieval can make small language models reliable enough for education."
+    ],
+    "interests": [
+      {
+        "title": "Retrieval-augmented generation",
+        "description": "Grounding model answers in trusted documents."
+      },
+      {
+        "title": "Evaluation",
+        "description": "Measuring whether AI answers are actually correct and useful."
+      },
+      {
+        "title": "AI in education",
+        "description": "Tutors that help students learn instead of just giving answers."
+      }
+    ],
+    "publications": [
+      {
+        "slug": "grounded-tutoring",
+        "title": "Grounded Tutoring: Citing Lecture Material in LLM Answers",
+        "authors": [
+          "Alex Morgan",
+          "Sam Lee",
+          "Dr. Jordan Rivera"
+        ],
+        "venue": "Student Research Conference 2026",
+        "year": "2026",
+        "status": "accepted",
+        "abstract": "We study how retrieval over course material changes the accuracy and trustworthiness of answers from a language-model tutor. In a study with 120 students, answers that cited lecture pages were rated more trustworthy and were more often correct. (Demo abstract — replace it with your own.)",
+        "keywords": [
+          "RAG",
+          "education",
+          "LLM evaluation"
+        ],
+        "codeUrl": "https://github.com/your-username/study-buddy",
+        "projectSlug": "study-buddy"
+      }
+    ]
+  },
+  "canvas": {
+    "instagramHandle": "@your-username",
+    "instagramUrl": "https://www.instagram.com/your-username/",
+    "interests": [
+      {
+        "label": "Reading",
+        "note": "Science fiction and biographies"
+      },
+      {
+        "label": "Traveling",
+        "note": "Twelve cities so far"
+      },
+      {
+        "label": "Chess",
+        "note": "Rapid, badly"
+      },
+      {
+        "label": "Poetry",
+        "note": "Short poems, mostly in notebooks"
+      }
+    ],
+    "instagramPosts": [],
+    "gallery": [
+      {
+        "type": "image",
+        "url": "/demo/gallery-1.webp",
+        "caption": "Weekend hikes"
+      },
+      {
+        "type": "image",
+        "url": "/demo/gallery-2.webp",
+        "caption": "Late-night coding with the club"
+      },
+      {
+        "type": "image",
+        "url": "/demo/gallery-3.webp",
+        "caption": "Monthly book club"
+      }
+    ]
+  },
+  "settings": {
+    "sections": {
+      "about": {
+        "show": true,
+        "navLabel": "About",
+        "eyebrow": "About",
+        "title": "Building software that people actually use."
+      },
+      "journey": {
+        "show": true,
+        "navLabel": "Journey",
+        "eyebrow": "Journey",
+        "title": "Where I've learned, built and led.",
+        "intro": "The places I've studied, the teams I've worked with, and the moments I'm proud of."
+      },
+      "skills": {
+        "show": true,
+        "eyebrow": "Skills",
+        "title": "AI at the core. The web around it.",
+        "intro": "The tools I reach for — from training a model to putting it in people's hands."
+      },
+      "projects": {
+        "show": true,
+        "navLabel": "Projects",
+        "eyebrow": "Projects",
+        "title": "Things I've built.",
+        "intro": "Each one started with a real problem. Open a project to see how I approached it and what came out of it."
+      },
+      "research": {
+        "show": true,
+        "navLabel": "Research",
+        "eyebrow": "Research interests",
+        "title": "Research that starts from what I build."
+      },
+      "canvas": {
+        "show": true,
+        "navLabel": "Canvas",
+        "eyebrow": "Canvas",
+        "title": "Beyond the code.",
+        "intro": "A few things I love when I'm away from the keyboard."
+      },
+      "contact": {
+        "show": true,
+        "navLabel": "Contact",
+        "eyebrow": "Contact",
+        "title": "Let's build something that matters.",
+        "intro": "Open to internships, research collaborations and graduate opportunities. Email is the fastest way to reach me."
+      }
+    },
+    "skillsHighlight": "dev-club",
+    "showAcademicPage": true
+  }
+}
