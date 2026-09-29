@@ -171,6 +171,13 @@ Every **Save** updates the page at `localhost:3000` right away. When you're happ
 
 From now on, **every push to `main` redeploys the site automatically.**
 
+> [!TIP]
+> **In a hurry? Use the "Deploy with Vercel" button** at the top of this page instead of steps 1–4.
+> It creates **your own copy** of this repo in your GitHub account and deploys it in one go.
+> Two things to know:
+> - It deploys the **demo content**. Clone the new repo it made (`github.com/YOUR-GITHUB-USERNAME/portfolio`) to edit it on your computer, or finish steps 4 and 5 to edit on the live site.
+> - It does **not** set up the admin login. That's what steps 4 and 5 are for.
+
 > At this point the public site works, and `/admin` on the live site asks you to sign in. The next two steps turn that on.
 
 ## 4. Admin login with Google
@@ -246,7 +253,12 @@ Now, on the live site:
 - The admin panel always shows your **latest saved** content, even while a rebuild is still running.
 
 > [!NOTE]
-> Vercel limits an upload to about **4.5 MB**. Photos are shrunk automatically, but for video use a **YouTube link** in any media field, or upload it on your computer with `npm run dev` and press Publish.
+> **File size on the live site.** Vercel accepts uploads up to about **4.5 MB**.
+> - **Photos**: no problem. Large phone photos are shrunk in your browser before uploading, then converted to WebP.
+> - **Videos**: upload them to **YouTube** and paste the link into any media field. Or upload them on your computer with `npm run dev` and press Publish (no size limit there).
+> - **PDFs over 4 MB**: compress them first (any free "compress PDF" website works), or upload them locally the same way.
+>
+> If a file is too large, the admin panel tells you exactly that.
 
 ## 6. Your own domain (optional)
 
