@@ -3,16 +3,19 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { revalidatePath } from "next/cache";
-import { getAdmin } from "@/lib/auth";
-import { canEdit, loadDraft, saveContent, storeMode } from "@/lib/store";
+import { signOut } from "@/auth";
+import { getAdmin } from "@/lib/admin";
+import { canWrite, loadContent, restoreVersion, saveContent, storageMode } from "@/lib/store";
 import { clean, isSectionId, setSection, slugify } from "./_lib/sections";
 
 export type ActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
+const notAllowed: ActionResult = { ok: false, error: "Please sign in again." };
+
 export async function saveSection(id: string, value: unknown): Promise<ActionResult> {
-  // Server actions are public endpoints, so each one checks the session itself.
-  if (!(await getAdmin())) return { ok: false, error: "Your session has ended — sign in again." };
-  if (!canEdit) return { ok: false, error: "Saving is turned off: add GITHUB_TOKEN to your Vercel environment variables." };
+  const admin = await getAdmin();
+  if (!admin) return notAllowed;
+  if (!canWrite) return { ok: false, error: "Saving needs the database (or a local dev server)." };
   if (!isSectionId(id)) return { ok: false, error: "Unknown section." };
 
   let next = clean(value);
@@ -23,32 +26,43 @@ export async function saveSection(id: string, value: unknown): Promise<ActionRes
       slug: item.slug || slugify(item.title),
     }));
   }
-
   if (id === "skills") {
     next = (next as { id?: string; title: string }[]).map((group) => ({ ...group, id: group.id || slugify(group.title) }));
   }
 
+  await saveContent(setSection(await loadContent(), id, next), admin.email);
+  // Rebuild the public pages so the change is live on the next visit.
+  revalidatePath("/", "layout");
+  return { ok: true, message: storageMode === "database" ? "Saved — it's live on the site now." : undefined };
+}
+
+export async function restore(versionId: number): Promise<ActionResult> {
+  const admin = await getAdmin();
+  if (!admin) return notAllowed;
   try {
-    await saveContent(setSection(await loadDraft(), id, next), `Update ${id} from admin`);
+    await restoreVersion(versionId, admin.email);
   } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : String(error) };
+    return { ok: false, error: error instanceof Error ? error.message : "Restore failed." };
   }
   revalidatePath("/", "layout");
-  return {
-    ok: true,
-    message:
-      storeMode === "github"
-        ? "Saved to GitHub — the live site updates in about a minute."
-        : "Saved. Use Publish to put it on the live site.",
-  };
+  return { ok: true, message: "Restored — that version is live again." };
+}
+
+export async function logout() {
+  await signOut({ redirectTo: "/login" });
 }
 
 const run = promisify(execFile);
 
-/** Commits the content file and uploads, then pushes — Vercel deploys from there. */
+/**
+ * File mode only (no database): commits the content file and uploads, then
+ * pushes — Vercel deploys from there.
+ */
 export async function publish(): Promise<ActionResult> {
-  if (!(await getAdmin())) return { ok: false, error: "Your session has ended — sign in again." };
-  if (storeMode !== "local") return { ok: false, error: "On the live site, saving publishes by itself." };
+  const admin = await getAdmin();
+  if (!admin) return notAllowed;
+  if (storageMode === "database") return { ok: true, message: "Nothing to publish — saved changes are already live." };
+  if (process.env.NODE_ENV !== "development") return { ok: false, error: "Publishing works from your local dev server." };
   const paths = ["src/content/site.json", "public/uploads"];
   try {
     await run("git", ["add", "--", ...paths]);

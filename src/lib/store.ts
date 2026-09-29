@@ -1,121 +1,97 @@
-// Where site content lives: one JSON file in the repo (src/content/site.json)
-// plus uploads in public/uploads.
-//
-// The admin panel writes them in one of two ways:
-//  - "local":  on your computer (`npm run dev`) it writes the files directly;
-//              the Publish button then commits and pushes them.
-//  - "github": on the live site it commits them through the GitHub API;
-//              Vercel sees the commit and redeploys (about a minute).
-// Without a GitHub token on the live site, the admin panel is read-only.
+// Where site content lives.
+// With a database (DATABASE_URL, e.g. Neon) content is one JSON row there,
+// edited from the admin panel anywhere and live as soon as it's saved.
+// Without one, it's src/content/site.json: the panel edits it on a local
+// dev server and a git push publishes it. That file also seeds the database
+// the first time.
 
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { cache } from "react";
+import { neon } from "@neondatabase/serverless";
 import bundled from "@/content/site.json";
 import type { SiteContent } from "@/content/types";
 
-const CONTENT_PATH = "src/content/site.json";
-const UPLOAD_DIR = "public/uploads";
+const FILE = path.join(process.cwd(), "src/content/site.json");
+const databaseUrl = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
+const sql = databaseUrl ? neon(databaseUrl) : null;
 
-export type StoreMode = "local" | "github" | "readonly";
+export const storageMode: "database" | "file" = sql ? "database" : "file";
 
-const github = {
-  token: process.env.GITHUB_TOKEN,
-  // On Vercel these are filled in from the connected repository automatically.
-  repo:
-    process.env.GITHUB_REPO ??
-    (process.env.VERCEL_GIT_REPO_OWNER && process.env.VERCEL_GIT_REPO_SLUG
-      ? `${process.env.VERCEL_GIT_REPO_OWNER}/${process.env.VERCEL_GIT_REPO_SLUG}`
-      : undefined),
-  branch: process.env.GITHUB_BRANCH ?? process.env.VERCEL_GIT_COMMIT_REF ?? "main",
-};
+/** The file can only be written on a local dev server; the database anywhere. */
+export const canWrite = sql !== null || process.env.NODE_ENV === "development";
 
-export const storeMode: StoreMode =
-  process.env.NODE_ENV === "development" ? "local" : github.token && github.repo ? "github" : "readonly";
 
-export const canEdit = storeMode !== "readonly";
+let ready: Promise<unknown> | null = null;
+function ensureTables() {
+  if (!sql) return Promise.resolve();
+  ready ??= (async () => {
+    await sql`create table if not exists site_content (
+      id int primary key,
+      data jsonb not null,
+      updated_at timestamptz not null default now(),
+      updated_by text
+    )`;
+    // Every save keeps the previous version, so a mistake can be undone.
+    await sql`create table if not exists site_content_history (
+      id bigserial primary key,
+      data jsonb not null,
+      saved_at timestamptz not null default now(),
+      saved_by text
+    )`;
+  })();
+  return ready;
+}
 
-/** Content as the public site shows it (baked into the build in production). */
-export async function loadContent(): Promise<SiteContent> {
-  // In dev, read the file fresh so admin edits show up immediately.
-  if (storeMode === "local") return readLocal();
+async function readFileContent(): Promise<SiteContent> {
+  // In dev, read the file fresh so edits show up immediately.
+  if (process.env.NODE_ENV === "development") return JSON.parse(await readFile(FILE, "utf8")) as SiteContent;
   return bundled as unknown as SiteContent;
 }
 
-/** The latest saved content, for the admin panel — may be ahead of the live build. */
-export async function loadDraft(): Promise<SiteContent> {
-  if (storeMode === "github") {
-    const file = await getGithubFile(CONTENT_PATH);
-    if (file) return JSON.parse(Buffer.from(file.content, "base64").toString("utf8")) as SiteContent;
+/** Reads the content once per request. */
+export const loadContent = cache(async (): Promise<SiteContent> => {
+  if (!sql) return readFileContent();
+  try {
+    await ensureTables();
+    const rows = await sql`select data from site_content where id = 1`;
+    if (rows.length) return rows[0].data as SiteContent;
+  } catch (error) {
+    // Keep the site up if the database is briefly unreachable.
+    console.error("Reading content from the database failed; using the bundled file.", error);
   }
-  return loadContent();
-}
+  return readFileContent();
+});
 
-export async function saveContent(content: SiteContent, message = "Update content from admin") {
-  const text = JSON.stringify(content, null, 2) + "\n";
-  if (storeMode === "local") return writeFile(path.join(process.cwd(), CONTENT_PATH), text);
-  if (storeMode === "github") return putGithubFile(CONTENT_PATH, Buffer.from(text), message);
-  throw new Error("Saving is turned off: add GITHUB_TOKEN to your Vercel environment variables.");
-}
-
-/** Stores an uploaded file and returns its public URL. */
-export async function saveUpload(name: string, bytes: Buffer) {
-  if (storeMode === "local") {
-    const dir = path.join(process.cwd(), UPLOAD_DIR);
-    await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, name), bytes);
-  } else if (storeMode === "github") {
-    await putGithubFile(`${UPLOAD_DIR}/${name}`, bytes, `Upload ${name} from admin`);
-  } else {
-    throw new Error("Uploads are turned off: add GITHUB_TOKEN to your Vercel environment variables.");
+export async function saveContent(content: SiteContent, by = "admin") {
+  if (!canWrite) throw new Error("Editing needs a database, or a local dev server.");
+  if (!sql) {
+    await writeFile(FILE, JSON.stringify(content, null, 2) + "\n");
+    return;
   }
-  return `/uploads/${name}`;
+  await ensureTables();
+  const data = JSON.stringify(content);
+  await sql`insert into site_content_history (data, saved_by)
+    select data, updated_by from site_content where id = 1`;
+  await sql`insert into site_content (id, data, updated_at, updated_by)
+    values (1, ${data}::jsonb, now(), ${by})
+    on conflict (id) do update set data = excluded.data, updated_at = now(), updated_by = excluded.updated_by`;
 }
 
-async function readLocal() {
-  return JSON.parse(await readFile(path.join(process.cwd(), CONTENT_PATH), "utf8")) as SiteContent;
+/** Recent saved versions, newest first. */
+export async function listHistory(limit = 20) {
+  if (!sql) return [];
+  await ensureTables();
+  return (await sql`select id, saved_at, saved_by from site_content_history order by id desc limit ${limit}`) as {
+    id: number;
+    saved_at: string;
+    saved_by: string | null;
+  }[];
 }
 
-// --- GitHub contents API ---------------------------------------------------
-
-async function githubFetch(filePath: string, init?: RequestInit) {
-  return fetch(`https://api.github.com/repos/${github.repo}/contents/${filePath}`, {
-    ...init,
-    cache: "no-store",
-    headers: {
-      Accept: "application/vnd.github+json",
-      Authorization: `Bearer ${github.token}`,
-      "X-GitHub-Api-Version": "2022-11-28",
-      ...init?.headers,
-    },
-  });
-}
-
-async function getGithubFile(filePath: string): Promise<{ sha: string; content: string } | null> {
-  const response = await githubFetch(`${filePath}?ref=${encodeURIComponent(github.branch)}`);
-  if (response.status === 404) return null;
-  if (!response.ok) throw new Error(`GitHub: ${response.status} ${await response.text()}`);
-  const file = (await response.json()) as { sha: string; content?: string; download_url?: string };
-  // Files over 1 MB come back without inline content.
-  if (!file.content && file.download_url) {
-    const raw = await fetch(file.download_url, { cache: "no-store", headers: { Authorization: `Bearer ${github.token}` } });
-    return { sha: file.sha, content: Buffer.from(await raw.arrayBuffer()).toString("base64") };
-  }
-  return { sha: file.sha, content: file.content ?? "" };
-}
-
-async function putGithubFile(filePath: string, bytes: Buffer, message: string) {
-  const existing = await getGithubFile(filePath);
-  const response = await githubFetch(filePath, {
-    method: "PUT",
-    body: JSON.stringify({
-      message,
-      content: bytes.toString("base64"),
-      branch: github.branch,
-      ...(existing ? { sha: existing.sha } : {}),
-    }),
-  });
-  if (!response.ok) {
-    const detail = ((await response.json().catch(() => ({}))) as { message?: string }).message ?? response.statusText;
-    throw new Error(`GitHub refused the commit (${response.status}): ${detail}`);
-  }
+export async function restoreVersion(id: number, by = "admin") {
+  if (!sql) throw new Error("History needs the database.");
+  const rows = await sql`select data from site_content_history where id = ${id}`;
+  if (!rows.length) throw new Error("That version no longer exists.");
+  await saveContent(rows[0].data as SiteContent, by);
 }

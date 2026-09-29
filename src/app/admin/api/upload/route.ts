@@ -1,15 +1,27 @@
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
-import { getAdmin } from "@/lib/auth";
-import { canEdit, saveUpload } from "@/lib/store";
+import { getAdmin } from "@/lib/admin";
 import { slugify } from "../../_lib/sections";
 
+const DIR = path.join(process.cwd(), "public/uploads");
 const allowed = /^(image\/(jpeg|png|webp|gif|avif)|video\/(mp4|webm|quicktime)|application\/pdf)$/;
 
-/** Saves an uploaded file under /public/uploads (photos are resized and converted to WebP). */
+/** Blob storage when it's set up (works anywhere), otherwise files in /public/uploads (local dev). */
+const blobEnabled = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+
+/** Tells the admin panel how to upload. */
+export async function GET() {
+  if (!(await getAdmin())) return Response.json({ error: "Not signed in." }, { status: 401 });
+  return Response.json({ mode: blobEnabled ? "blob" : "file" });
+}
+
+/** Local mode: saves the file under /public/uploads (photos resized and converted to WebP). */
 export async function POST(request: Request) {
-  if (!(await getAdmin())) return Response.json({ error: "Sign in again to upload." }, { status: 401 });
-  if (!canEdit) return Response.json({ error: "Uploads need GITHUB_TOKEN on the live site." }, { status: 403 });
+  if (!(await getAdmin())) return Response.json({ error: "Not signed in." }, { status: 401 });
+  if (process.env.NODE_ENV !== "development") {
+    return Response.json({ error: "Uploads need Vercel Blob to be connected." }, { status: 400 });
+  }
 
   const file = (await request.formData()).get("file");
   if (!(file instanceof File)) return Response.json({ error: "No file." }, { status: 400 });
@@ -28,10 +40,7 @@ export async function POST(request: Request) {
     name = `${base}-${stamp}${ext}`;
   }
 
-  try {
-    const url = await saveUpload(name, bytes);
-    return Response.json({ url, size: bytes.length });
-  } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 });
-  }
+  await mkdir(DIR, { recursive: true });
+  await writeFile(path.join(DIR, name), bytes);
+  return Response.json({ url: `/uploads/${name}`, size: bytes.length });
 }

@@ -23,6 +23,7 @@ import {
 import { useId, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import type { Field } from "./schema";
+import { uploadFile } from "./upload";
 
 type Props<F extends Field = Field> = { field: F; value: any; onChange: (value: any) => void };
 
@@ -142,50 +143,6 @@ function NumberInput({ id, step, value, onChange }: { id: string; step?: number;
       className={cn(inputClass, "tabular-nums")}
     />
   );
-}
-
-// Vercel rejects request bodies over 4.5 MB, so stay safely below that.
-const MAX_UPLOAD = 4 * 1024 * 1024;
-
-/** Scales a large photo down in the browser so it fits under the upload limit. */
-async function shrinkImage(file: File): Promise<File> {
-  const bitmap = await createImageBitmap(file);
-  let scale = Math.min(1, 2400 / Math.max(bitmap.width, bitmap.height));
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(bitmap.width * scale);
-    canvas.height = Math.round(bitmap.height * scale);
-    canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.88));
-    if (blob && blob.size <= MAX_UPLOAD) {
-      return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
-    }
-    scale *= 0.75;
-  }
-  throw new Error("This photo is too large to upload. Try a smaller one.");
-}
-
-async function uploadFile(original: File): Promise<string> {
-  let file = original;
-  if (file.size > MAX_UPLOAD) {
-    if (file.type.startsWith("image/") && file.type !== "image/gif") {
-      file = await shrinkImage(file);
-    } else {
-      const mb = (file.size / 1024 / 1024).toFixed(1);
-      throw new Error(
-        file.type.startsWith("video/")
-          ? `This video is ${mb} MB; the limit is 4 MB. Upload it to YouTube and paste the link instead.`
-          : `This file is ${mb} MB; the limit is 4 MB. Compress it first (e.g. with an online PDF compressor).`,
-      );
-    }
-  }
-  const body = new FormData();
-  body.append("file", file);
-  const response = await fetch("/admin/api/upload", { method: "POST", body });
-  // A rejected request (e.g. too large) may come back as plain text, not JSON.
-  const data = await response.json().catch(() => ({}) as { error?: string; url?: string });
-  if (!response.ok) throw new Error(data.error ?? `Upload failed (${response.status}).`);
-  return data.url as string;
 }
 
 function FileInput({ id, accept, value, onChange }: { id: string; accept: string; value: any; onChange: (v: any) => void }) {

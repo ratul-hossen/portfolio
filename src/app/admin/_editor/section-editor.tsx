@@ -107,7 +107,7 @@ export function SectionEditor({ id, initial, canEdit }: { id: SectionId; initial
                 type="button"
                 disabled={pending || !canEdit}
                 onClick={save}
-                title={canEdit ? "Save (⌘S)" : "Saving needs GITHUB_TOKEN on the live site"}
+                title={canEdit ? "Save (⌘S)" : "Saving on the live site needs the database (see the README)"}
                 className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-60"
               >
                 {pending ? <Loader2 className="size-4 animate-spin" /> : null}

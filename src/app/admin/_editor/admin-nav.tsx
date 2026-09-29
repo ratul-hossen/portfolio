@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { cn } from "@/lib/cn";
-import type { StoreMode } from "@/lib/store";
+import { logout } from "../actions";
 import { PublishButton } from "./publish-button";
 
 const groups = [
@@ -54,9 +54,9 @@ const groups = [
   { title: "Site", items: [{ href: "/admin/settings", label: "Settings", icon: Settings }] },
 ];
 
-export function AdminNav({ name, email, mode }: { name: string; email: string | null; mode: StoreMode }) {
-  // Only a local dev server needs a Publish step; on the live site every save is a commit.
-  const showPublish = mode === "local";
+export function AdminNav({ name, email, storage }: { name: string; email: string; storage: "database" | "file" }) {
+  // With the database, Save is already live — Publish (git push) is only for local file mode.
+  const showPublish = storage === "file";
   const pathname = usePathname();
   const links = groups.flatMap((group) => group.items);
 
@@ -100,7 +100,13 @@ export function AdminNav({ name, email, mode }: { name: string; email: string | 
           ))}
         </nav>
         <div className="space-y-2 border-t border-line p-4">
-          {showPublish ? <PublishButton /> : null}
+          {showPublish ? (
+            <PublishButton />
+          ) : (
+            <p className="flex items-center justify-center gap-1.5 rounded-full bg-success-soft py-2 text-xs font-medium text-success">
+              <span className="size-1.5 rounded-full bg-success" /> Saves go live instantly
+            </p>
+          )}
           <a
             href="/"
             target="_blank"
@@ -108,13 +114,13 @@ export function AdminNav({ name, email, mode }: { name: string; email: string | 
           >
             View site <ArrowUpRight className="size-4" />
           </a>
-          {email ? (
-            <form action="/api/auth/logout" method="post" className="flex items-center gap-2 rounded-xl bg-surface-2 py-1.5 pl-3 pr-1.5">
-              <span className="min-w-0 flex-1 truncate text-xs text-muted" title={email}>
+          {email !== "local" ? (
+            <form action={logout} className="flex items-center justify-between gap-2 border-t border-line pt-3">
+              <span className="min-w-0 truncate text-xs text-muted" title={email}>
                 {email}
               </span>
-              <button type="submit" title="Sign out" aria-label="Sign out" className="grid size-7 place-items-center rounded-full text-muted hover:bg-surface hover:text-fg">
-                <LogOut className="size-3.5" />
+              <button type="submit" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-muted hover:text-fg">
+                <LogOut className="size-3.5" /> Sign out
               </button>
             </form>
           ) : null}
@@ -130,10 +136,10 @@ export function AdminNav({ name, email, mode }: { name: string; email: string | 
           <div className="flex items-center gap-1">
             <ThemeToggle />
             {showPublish ? <PublishButton compact /> : null}
-            {email ? (
-              <form action="/api/auth/logout" method="post">
-                <button type="submit" aria-label="Sign out" className="grid size-9 place-items-center rounded-full text-muted hover:text-fg">
-                  <LogOut className="size-4" />
+            {email !== "local" ? (
+              <form action={logout}>
+                <button type="submit" aria-label="Sign out" className="grid size-9 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-fg">
+                  <LogOut className="size-[18px]" strokeWidth={1.75} />
                 </button>
               </form>
             ) : null}

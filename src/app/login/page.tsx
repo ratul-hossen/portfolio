@@ -2,25 +2,24 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, Lock } from "lucide-react";
-import { authConfigured, getAdmin } from "@/lib/auth";
+import { loginProviders, signIn } from "@/auth";
+import { getAdmin } from "@/lib/admin";
 
 export const metadata: Metadata = {
   title: "Sign in",
   robots: { index: false, follow: false },
 };
 
+// Auth.js sends these codes back as ?error=…
 const errors: Record<string, string> = {
-  "not-allowed": "That Google account isn't on the admin list. Add its email to ADMIN_EMAILS.",
-  "not-configured": "Google sign-in isn't set up yet — see “Admin login” in the README.",
-  expired: "The sign-in took too long or was opened in another browser. Please try again.",
-  google: "Google didn't confirm the sign-in. Check GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.",
+  AccessDenied: "That account isn't on the admin list. Add its email to ADMIN_EMAILS.",
+  Configuration: "Sign-in isn't set up correctly — check AUTH_SECRET and the Google keys.",
 };
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   if (await getAdmin()) redirect("/admin");
-  const params = await searchParams;
-  const error = typeof params.error === "string" ? (errors[params.error] ?? "Sign-in failed.") : null;
-  const signedOut = "signed-out" in params;
+  const { error } = await searchParams;
+  const message = typeof error === "string" ? (errors[error] ?? "Sign-in didn't work. Please try again.") : null;
 
   return (
     <main className="grid min-h-dvh place-items-center bg-bg px-5">
@@ -30,30 +29,37 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
             <Lock className="size-5" strokeWidth={1.75} />
           </span>
           <h1 className="mt-5 text-2xl font-semibold tracking-tight">Portfolio admin</h1>
-          <p className="mt-1.5 text-sm text-muted">Sign in with the Google account you listed as an admin.</p>
+          <p className="mt-1.5 text-sm text-muted">Sign in with an account you listed as an admin.</p>
 
-          {error ? (
+          {message ? (
             <p role="alert" className="mt-5 rounded-xl bg-warning-soft px-4 py-3 text-left text-sm text-warning">
-              {error}
-            </p>
-          ) : signedOut ? (
-            <p role="status" className="mt-5 rounded-xl bg-success-soft px-4 py-3 text-sm text-success">
-              You&apos;re signed out.
+              {message}
             </p>
           ) : null}
 
-          {authConfigured ? (
-            // A plain link: the route handler redirects to Google.
-            <a
-              href="/api/auth/google"
-              className="mt-6 flex w-full items-center justify-center gap-3 rounded-full border border-line bg-bg py-3 text-[15px] font-medium transition hover:bg-surface-2"
-            >
-              <GoogleLogo />
-              Continue with Google
-            </a>
+          {loginProviders.length ? (
+            <div className="mt-6 space-y-2.5">
+              {loginProviders.map((provider) => (
+                <form
+                  key={provider.id}
+                  action={async () => {
+                    "use server";
+                    await signIn(provider.id, { redirectTo: "/admin" });
+                  }}
+                >
+                  <button
+                    type="submit"
+                    className="flex w-full items-center justify-center gap-3 rounded-full border border-line bg-bg py-3 text-[15px] font-medium transition hover:bg-surface-2"
+                  >
+                    {provider.id === "google" ? <GoogleLogo /> : <MicrosoftLogo />}
+                    Continue with {provider.name}
+                  </button>
+                </form>
+              ))}
+            </div>
           ) : (
             <p className="mt-6 rounded-xl border border-dashed border-line px-4 py-3 text-left text-sm leading-relaxed text-muted">
-              Set <Code>GOOGLE_CLIENT_ID</Code>, <Code>GOOGLE_CLIENT_SECRET</Code>, <Code>AUTH_SECRET</Code> and{" "}
+              Set <Code>AUTH_GOOGLE_ID</Code>, <Code>AUTH_GOOGLE_SECRET</Code>, <Code>AUTH_SECRET</Code> and{" "}
               <Code>ADMIN_EMAILS</Code> to turn on sign-in. The README walks you through it.
             </p>
           )}
@@ -77,6 +83,17 @@ function GoogleLogo() {
       <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
       <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
       <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" />
+    </svg>
+  );
+}
+
+function MicrosoftLogo() {
+  return (
+    <svg viewBox="0 0 21 21" className="size-[18px]" aria-hidden>
+      <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+      <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+      <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+      <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
     </svg>
   );
 }

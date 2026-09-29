@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { ArrowRight, CloudUpload, HardDrive, Lock, Save } from "lucide-react";
 import { computeCgpa } from "@/lib/grades";
-import { loadDraft, storeMode } from "@/lib/store";
+import { canWrite, listHistory, loadContent, storageMode } from "@/lib/store";
+import { HistoryList } from "./_editor/history-list";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const content = await loadDraft();
+  const content = await loadContent();
+  const live = storageMode === "database";
+  const history = live ? await listHistory(15) : [];
   const count = (...kinds: string[]) => content.journey.filter((item) => kinds.includes(item.kind)).length;
   const degree = content.journey.find((item) => item.kind === "education" && item.grades?.length);
   const cgpa = degree?.grades ? computeCgpa(degree.grades) : null;
@@ -21,33 +24,17 @@ export default async function AdminDashboard() {
     { href: "/admin/canvas", label: "Instagram", value: content.canvas.instagramPosts.length, note: `${pinnedPosts} pinned` },
   ];
 
-  const steps =
-    storeMode === "local"
-      ? [
-          { icon: Save, title: "Edit & save", text: "Change anything in a section, then Save (or ⌘S). The site on this computer updates straight away." },
-          { icon: CloudUpload, title: "Publish", text: "Publish commits your changes and uploads and pushes them to GitHub. Vercel updates the live site in about a minute." },
-          { icon: HardDrive, title: "Files", text: "Uploaded photos are resized and saved as WebP in /public/uploads. PDFs and videos are kept as they are." },
-        ]
-      : [
-          { icon: Save, title: "Edit & save", text: "Change anything in a section, then Save (or ⌘S). Each save is committed to your GitHub repository." },
-          { icon: CloudUpload, title: "Goes live by itself", text: "Vercel sees the commit and rebuilds the site — your change is live in about a minute." },
-          { icon: HardDrive, title: "Files", text: "Uploaded photos are resized to WebP and committed to /public/uploads. They appear after the next rebuild. Keep videos under 4 MB, or use a YouTube link." },
-        ];
-
-  const notes = {
-    local: {
-      title: "Running on your computer.",
-      text: "Google sign-in is skipped here until you set it up. Publish pushes your changes to GitHub, and Vercel deploys them.",
-    },
-    github: {
-      title: "Signed in with Google.",
-      text: "Only the emails in ADMIN_EMAILS can open this panel. Your edits are saved to GitHub.",
-    },
-    readonly: {
-      title: "Read-only.",
-      text: "Add a GITHUB_TOKEN environment variable in Vercel so this panel can save your changes. The README shows how.",
-    },
-  }[storeMode];
+  const steps = live
+    ? [
+        { icon: Save, title: "Edit & save", text: "Change anything in a section, then Save (or ⌘S). The live site updates within seconds — no publishing step." },
+        { icon: HardDrive, title: "Files", text: "Photos are resized in your browser and stored on Vercel Blob; PDFs and videos are kept as they are." },
+        { icon: CloudUpload, title: "Undo", text: "Every save keeps the previous version. Restore any of them from the history below." },
+      ]
+    : [
+        { icon: Save, title: "Edit & save", text: "Change anything in a section, then Save (or ⌘S). The site on this computer updates straight away." },
+        { icon: CloudUpload, title: "Publish", text: "Publish commits your changes and uploads and pushes them to GitHub. Vercel updates the live site in about a minute." },
+        { icon: HardDrive, title: "Files", text: "Uploaded photos are resized and saved as WebP in /public/uploads. PDFs and videos are kept as they are." },
+      ];
 
   return (
     <div className="space-y-12 pb-16">
@@ -91,12 +78,31 @@ export default async function AdminDashboard() {
         </ol>
       </section>
 
-      <section className="flex gap-4 rounded-2xl border border-dashed border-line p-5">
-        <Lock className="mt-0.5 size-5 shrink-0 text-muted" strokeWidth={1.75} />
-        <p className="text-sm leading-relaxed text-muted">
-          <span className="font-medium text-fg">{notes.title}</span> {notes.text}
-        </p>
-      </section>
+      {live ? (
+        <section>
+          <h2 className="text-sm font-semibold text-muted">Version history</h2>
+          <div className="mt-3">
+            <HistoryList versions={history} />
+          </div>
+        </section>
+      ) : (
+        <section className="flex gap-4 rounded-2xl border border-dashed border-line p-5">
+          <Lock className="mt-0.5 size-5 shrink-0 text-muted" strokeWidth={1.75} />
+          <p className="text-sm leading-relaxed text-muted">
+            {canWrite ? (
+              <>
+                <span className="font-medium text-fg">Local mode.</span> No database is connected, so edits save to the
+                content file on this computer and go live with Publish. Connect the database to edit from anywhere.
+              </>
+            ) : (
+              <>
+                <span className="font-medium text-fg">Read-only.</span> Connect a Neon database to this project in Vercel
+                (Storage → Neon) and redeploy — then your saves go live instantly. The README shows how.
+              </>
+            )}
+          </p>
+        </section>
+      )}
     </div>
   );
 }
