@@ -106,7 +106,7 @@ The file `src/content/site.json` also **seeds** the database: until your first s
 
 You need **[Node.js 22](https://nodejs.org)** (or newer) and **[Git](https://git-scm.com)**.
 
-**a) Get your own copy of the repo.** At the top of this page, click **Use this template → Create a new repository** (or **Fork**). Name it `portfolio`. GitHub now has a copy that belongs to **you**, at `https://github.com/YOUR-GITHUB-USERNAME/portfolio`.
+**a) Get your own copy of the repo.** [**Sign in to GitHub**](https://github.com/login) first — the button only appears when you're signed in. Then, at the top of this page, click the green **Use this template** button (left of **Code**, above the file list) → **Create a new repository**. On a phone, open the page in *desktop mode*. Or use [**this direct link**](https://github.com/new?template_name=portfolio&template_owner=ratul-hossen), or **Fork**. Name it `portfolio`. GitHub now has a copy that belongs to **you**, at `https://github.com/YOUR-GITHUB-USERNAME/portfolio`.
 
 > [!IMPORTANT]
 > Wherever this guide says **`YOUR-GITHUB-USERNAME`**, type **your own** GitHub username.
